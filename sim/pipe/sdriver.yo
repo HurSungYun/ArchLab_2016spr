@@ -1,0 +1,136 @@
+                      | #######################################################################
+                      | # Test for copying block of size 4;
+                      | #######################################################################
+  0x000:              | 	.pos 0
+  0x000:              | main:	
+  0x000: 30f454010000 |   irmovl Stack, %esp    # Set up stack pointer
+  0x006: 30f554010000 |   irmovl Stack, %ebp    # Set up base pointer
+                      | 
+                      | 	# Set up arguments for copy function and then invoke it
+  0x00c: 30f004000000 | 	irmovl $4, %eax # concatenate 4 elements from src to dst
+  0x012: a00f         | 	pushl %eax
+  0x014: 30f0d4000000 | 	irmovl dest, %eax	# dst array
+  0x01a: a00f         | 	pushl %eax
+  0x01c: 30f0bc000000 | 	irmovl src, %eax	# src array
+  0x022: a00f         | 	pushl %eax
+  0x024: 802a000000   | 	call ncopy		 
+  0x029: 00           | 	halt			# should halt with num nonzeros in %eax
+  0x02a:              | StartFun:
+                      | #/* $begin ncopy-ys */
+                      | ##################################################################
+                      | # ncopy.ys - Concatenates a src block of len ints to dst.
+                      | # Return the number of positive ints (>0) contained in src.
+                      | #
+                      | # Include your name and ID here.
+                      | # Describe how and why you modified the baseline code.
+                      | #
+                      | # (*) Note: Pseudo-end of array is 0xccaaff.
+                      | ##################################################################
+                      | # Do not modify this portion (Function Prolog)
+  0x02a: a05f         | ncopy:  pushl %ebp    # Save old frame pointer
+  0x02c: 2045         |   rrmovl %esp,%ebp    # Set up new frame pointer
+  0x02e: a06f         |   pushl %esi          # Save callee-save regs
+  0x030: a03f         |   pushl %ebx
+  0x032: a07f         |   pushl %edi
+  0x034: 503508000000 |   mrmovl 8(%ebp),%ebx   # src
+  0x03a: 502510000000 |   mrmovl 16(%ebp),%edx  # len
+  0x040: 50150c000000 |   mrmovl 12(%ebp),%ecx  # dst
+                      | ##################################################################
+                      | # You can modify this portion 
+  0x046: 6222         |   andl %edx,%edx    # len <= 0?
+  0x048: 71ae000000   |   jle Done          # if so, goto Done:
+  0x04d: 30f0fcffffff |   irmovl $-4,%eax
+  0x053: 6001         |   addl %eax,%ecx
+  0x055:              | Move:
+  0x055: 30f004000000 |   irmovl $4,%eax
+  0x05b: 6001         |   addl %eax,%ecx
+  0x05d: 506100000000 |   mrmovl (%ecx),%esi    # *dst++
+  0x063: 30f0ffaacc00 |   irmovl $0xccaaff,%eax # *dst == pseudo-end of file?
+  0x069: 6306         |   xorl %eax,%esi
+  0x06b: 7455000000   |   jne Move              # not? goto Move
+  0x070: 30f004000000 |   irmovl $4,%eax        # Maintain pseudo-end of file
+  0x076: 6001         |   addl %eax,%ecx
+  0x078: 6300         |   xorl %eax,%eax
+  0x07a:              | Loop: 
+  0x07a: 506300000000 |   mrmovl (%ebx), %esi   # read val from src...
+  0x080: 406100000000 |   rmmovl %esi, (%ecx)   # ...and store it to dst
+  0x086: 6266         |   andl %esi, %esi       # val <= 0?
+  0x088: 7195000000   |   jle Npos              # if so, goto Npos:
+  0x08d: 30f701000000 |   irmovl $1, %edi
+  0x093: 6070         |   addl %edi, %eax       # count++
+  0x095:              | Npos: 
+  0x095: 30f701000000 |   irmovl $1, %edi
+  0x09b: 6172         |   subl %edi, %edx       # len--
+  0x09d: 30f704000000 |   irmovl $4, %edi
+  0x0a3: 6073         |   addl %edi, %ebx       # src++
+  0x0a5: 6071         |   addl %edi, %ecx       # dst++
+  0x0a7: 6222         |   andl %edx,%edx        # len > 0?
+  0x0a9: 767a000000   |   jg Loop               # if so, goto Loop:
+                      | ##################################################################
+                      | # Do not modify the following section of code (Function epiloge)
+  0x0ae:              | Done:
+  0x0ae: b07f         |   popl %edi               # Restore callee-save registers
+  0x0b0: b03f         |   popl %ebx
+  0x0b2: b06f         |   popl %esi
+  0x0b4: 2054         |   rrmovl %ebp, %esp
+  0x0b6: b05f         |   popl %ebp
+  0x0b8: 90           |   ret
+                      | ##################################################################
+                      | # Keep the following label at the end of your function
+  0x0b9:              | End:
+                      | #/* $end ncopy-ys */
+  0x0b9:              | EndFun:
+                      | 
+                      | ###############################
+                      | # Source and destination blocks 
+                      | ###############################
+  0x0bc:              | 	.align 4
+  0x0bc:              | src:
+  0x0bc: 01000000     | 	.long 1
+  0x0c0: feffffff     | 	.long -2
+  0x0c4: fdffffff     | 	.long -3
+  0x0c8: 04000000     | 	.long 4
+  0x0cc: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
+                      | 
+  0x0d0:              | 	.align 16
+  0x0d0:              | Predest:
+  0x0d0: fadebc00     | 	.long 0xbcdefa
+  0x0d4:              | dest:
+  0x0d4: ffaacc00     | 	.long 0xccaaff
+  0x0d8: ccaaff00     | 	.long 0xffaacc
+  0x0dc: ccaaff00     | 	.long 0xffaacc
+  0x0e0: ccaaff00     | 	.long 0xffaacc
+  0x0e4: ccaaff00     | 	.long 0xffaacc
+  0x0e8: ccaaff00     | 	.long 0xffaacc
+  0x0ec: ccaaff00     | 	.long 0xffaacc
+  0x0f0: ccaaff00     | 	.long 0xffaacc
+  0x0f4: ccaaff00     | 	.long 0xffaacc
+  0x0f8:              | Postdest:
+  0x0f8: bcfade00     | 	.long 0xdefabc
+                      | 
+  0x0fc:              | .align 4
+                      | # Run time stack
+  0x0fc: 00000000     | 	.long 0
+  0x100: 00000000     | 	.long 0
+  0x104: 00000000     | 	.long 0
+  0x108: 00000000     | 	.long 0
+  0x10c: 00000000     | 	.long 0
+  0x110: 00000000     | 	.long 0
+  0x114: 00000000     | 	.long 0
+  0x118: 00000000     | 	.long 0
+  0x11c: 00000000     | 	.long 0
+  0x120: 00000000     | 	.long 0
+  0x124: 00000000     | 	.long 0
+  0x128: 00000000     | 	.long 0
+  0x12c: 00000000     | 	.long 0
+  0x130: 00000000     | 	.long 0
+  0x134: 00000000     | 	.long 0
+  0x138: 00000000     | 	.long 0
+  0x13c: 00000000     | 	.long 0
+  0x140: 00000000     | 	.long 0
+  0x144: 00000000     | 	.long 0
+  0x148: 00000000     | 	.long 0
+  0x14c: 00000000     | 	.long 0
+  0x150: 00000000     | 	.long 0
+                      | 
+  0x154:              | Stack:
