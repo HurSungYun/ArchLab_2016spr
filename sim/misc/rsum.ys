@@ -1,0 +1,64 @@
+irmovl Stack, %esp
+irmovl Stack, %ebp
+pushl %ebp
+irmovl ele1, %edx
+pushl %edx
+call rsum_list
+halt
+
+.align 4
+ele1:
+.long 0x008
+.long ele2
+ele2:
+.long 0x000
+.long ele3
+ele3:
+.long 0xc00
+.long ele4
+ele4:
+.long 0x0b0
+.long ele5
+ele5:
+.long 0x000
+.long ele6:
+ele6:
+.long 0x1000
+.long 0
+
+rsum_list:
+pushl %ebp
+rrmovl %esp, %ebp
+pushl %edi
+irmovl $1, %edi
+pushl %esi
+mrmovl 8(%ebp), %edx
+xorl %eax, %eax
+xorl %ecx, %ecx
+andl %edx, %edx
+je ending
+
+mrmovl (%edx), %eax
+rrmovl %eax, %esi
+andl %eax, %eax
+cmove %edi, %esi
+rrmovl %esi, %ecx
+
+pushl %ecx
+mrmovl 4(%edx), %edx
+pushl %edx
+call rsum_list
+popl %edx
+popl %ecx
+
+ending:
+addl %ecx, %eax
+popl %esi
+popl %edi
+rrmovl %ebp, %esp
+popl %ebp
+ret
+
+.pos 0x200
+Stack:
+

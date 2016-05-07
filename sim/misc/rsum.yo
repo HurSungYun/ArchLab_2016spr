@@ -1,0 +1,64 @@
+  0x000: 30f400020000 | irmovl Stack, %esp
+  0x006: 30f500020000 | irmovl Stack, %ebp
+  0x00c: a05f         | pushl %ebp
+  0x00e: 30f21c000000 | irmovl ele1, %edx
+  0x014: a02f         | pushl %edx
+  0x016: 804c000000   | call rsum_list
+  0x01b: 00           | halt
+                      | 
+  0x01c:              | .align 4
+  0x01c:              | ele1:
+  0x01c: 08000000     | .long 0x008
+  0x020: 24000000     | .long ele2
+  0x024:              | ele2:
+  0x024: 00000000     | .long 0x000
+  0x028: 2c000000     | .long ele3
+  0x02c:              | ele3:
+  0x02c: 000c0000     | .long 0xc00
+  0x030: 34000000     | .long ele4
+  0x034:              | ele4:
+  0x034: b0000000     | .long 0x0b0
+  0x038: 3c000000     | .long ele5
+  0x03c:              | ele5:
+  0x03c: 00000000     | .long 0x000
+  0x040: 44000000     | .long ele6:
+  0x044:              | ele6:
+  0x044: 00100000     | .long 0x1000
+  0x048: 00000000     | .long 0
+                      | 
+  0x04c:              | rsum_list:
+  0x04c: a05f         | pushl %ebp
+  0x04e: 2045         | rrmovl %esp, %ebp
+  0x050: a07f         | pushl %edi
+  0x052: 30f701000000 | irmovl $1, %edi
+  0x058: a06f         | pushl %esi
+  0x05a: 502508000000 | mrmovl 8(%ebp), %edx
+  0x060: 6300         | xorl %eax, %eax
+  0x062: 6311         | xorl %ecx, %ecx
+  0x064: 6222         | andl %edx, %edx
+  0x066: 738c000000   | je ending
+                      | 
+  0x06b: 500200000000 | mrmovl (%edx), %eax
+  0x071: 2006         | rrmovl %eax, %esi
+  0x073: 6200         | andl %eax, %eax
+  0x075: 2376         | cmove %edi, %esi
+  0x077: 2061         | rrmovl %esi, %ecx
+                      | 
+  0x079: a01f         | pushl %ecx
+  0x07b: 502204000000 | mrmovl 4(%edx), %edx
+  0x081: a02f         | pushl %edx
+  0x083: 804c000000   | call rsum_list
+  0x088: b02f         | popl %edx
+  0x08a: b01f         | popl %ecx
+                      | 
+  0x08c:              | ending:
+  0x08c: 6010         | addl %ecx, %eax
+  0x08e: b06f         | popl %esi
+  0x090: b07f         | popl %edi
+  0x092: 2054         | rrmovl %ebp, %esp
+  0x094: b05f         | popl %ebp
+  0x096: 90           | ret
+                      | 
+  0x200:              | .pos 0x200
+  0x200:              | Stack:
+                      | 
