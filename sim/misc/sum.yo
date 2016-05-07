@@ -1,7 +1,7 @@
   0x000: 30f400010000 | irmovl Stack, %esp
   0x006: 30f500010000 | irmovl Stack, %ebp
   0x00c: a05f         | pushl %ebp
-  0x00e: 30f21c000000 | irmovl ele1, %edx
+  0x00e: 30f200000000 | irmovl $0, %edx
   0x014: a02f         | pushl %edx
   0x016: 804c000000   | call sum_list
   0x01b: 00           | halt
@@ -33,25 +33,26 @@
   0x052: 30f701000000 | irmovl $1, %edi
   0x058: a06f         | pushl %esi
   0x05a: 502508000000 | mrmovl 8(%ebp), %edx
-  0x060: 6311         | xorl %ecx, %ecx
-  0x062: 6222         | andl %edx, %edx
-  0x064: 7384000000   | je ending
-  0x069:              | sum:
-  0x069: 500200000000 | mrmovl (%edx), %eax
-  0x06f: 2006         | rrmovl %eax, %esi
-  0x071: 6200         | andl %eax, %eax
-  0x073: 2376         | cmove %edi, %esi
-  0x075: 6061         | addl %esi, %ecx
-  0x077: 502204000000 | mrmovl 4(%edx), %edx
-  0x07d: 6222         | andl %edx, %edx
-  0x07f: 7469000000   | jne sum
-  0x084:              | ending:
-  0x084: 2010         | rrmovl %ecx, %eax
-  0x086: b06f         | popl %esi
-  0x088: b07f         | popl %edi
-  0x08a: 2054         | rrmovl %ebp, %esp
-  0x08c: b05f         | popl %ebp
-  0x08e: 90           | ret
+                      | # xorl %ecx, %ecx
+  0x060: 30f103000000 | irmovl $3, %ecx
+  0x066: 6222         | andl %edx, %edx
+  0x068: 7388000000   | je ending
+  0x06d:              | sum:
+  0x06d: 500200000000 | mrmovl (%edx), %eax
+  0x073: 2006         | rrmovl %eax, %esi
+  0x075: 6200         | andl %eax, %eax
+  0x077: 2376         | cmove %edi, %esi
+  0x079: 6061         | addl %esi, %ecx
+  0x07b: 502204000000 | mrmovl 4(%edx), %edx
+  0x081: 6222         | andl %edx, %edx
+  0x083: 746d000000   | jne sum
+  0x088:              | ending:
+  0x088: 2010         | rrmovl %ecx, %eax
+  0x08a: b06f         | popl %esi
+  0x08c: b07f         | popl %edi
+  0x08e: 2054         | rrmovl %ebp, %esp
+  0x090: b05f         | popl %ebp
+  0x092: 90           | ret
                       | 
   0x100:              | .pos 0x100
   0x100:              | Stack:

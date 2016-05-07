@@ -1,7 +1,7 @@
   0x000: 30f400020000 | irmovl Stack, %esp
   0x006: 30f500020000 | irmovl Stack, %ebp
   0x00c: a05f         | pushl %ebp
-  0x00e: 30f21c000000 | irmovl ele1, %edx
+  0x00e: 30f200000000 | irmovl $0, %edx
   0x014: a02f         | pushl %edx
   0x016: 804c000000   | call rsum_list
   0x01b: 00           | halt

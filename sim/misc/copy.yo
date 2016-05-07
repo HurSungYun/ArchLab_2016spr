@@ -1,0 +1,58 @@
+  0x000: 30f400030000 | irmovl Stack, %esp
+  0x006: 30f500030000 | irmovl Stack, %ebp
+  0x00c: a05f         | pushl %ebp
+  0x00e: 30f200000000 | irmovl $0, %edx
+  0x014: a02f         | pushl %edx
+  0x016: 30f238000000 | irmovl dest, %edx
+  0x01c: a02f         | pushl %edx
+  0x01e: 30f22c000000 | irmovl src, %edx
+  0x024: a02f         | pushl %edx
+  0x026: 8044000000   | call copy_block
+  0x02b: 00           | halt
+                      | 
+  0x02c:              | .align 4
+                      | # Source block
+  0x02c:              | src:
+  0x02c: 0a000000     | .long 0x00a
+  0x030: b0000000     | .long 0x0b0
+  0x034: 000c0000     | .long 0xc00
+                      | # Destination block
+  0x038:              | dest:
+  0x038: 11010000     | .long 0x111
+  0x03c: 22020000     | .long 0x222
+  0x040: 33030000     | .long 0x333
+                      | 
+  0x044:              | copy_block:
+  0x044: a05f         | pushl %ebp
+  0x046: 2045         | rrmovl %esp, %ebp
+  0x048: a07f         | pushl %edi
+  0x04a: 30f704000000 | irmovl $4, %edi
+  0x050: a06f         | pushl %esi
+  0x052: a03f         | pushl %ebx
+  0x054: 503508000000 | mrmovl 8(%ebp), %ebx
+  0x05a: 50250c000000 | mrmovl 12(%ebp), %edx
+  0x060: 501510000000 | mrmovl 16(%ebp), %ecx
+  0x066: 6300         | xorl %eax, %eax
+  0x068: 6211         | andl %ecx, %ecx
+  0x06a: 718e000000   | jle ending
+                      | 
+  0x06f:              | loop:
+  0x06f: 506300000000 | mrmovl (%ebx), %esi
+  0x075: 6073         | addl %edi, %ebx
+  0x077: 406200000000 | rmmovl %esi, (%edx)
+  0x07d: 6072         | addl %edi, %edx
+  0x07f: 6360         | xorl %esi, %eax
+  0x081: 30f601000000 | irmovl $1, %esi
+  0x087: 6161         | subl %esi, %ecx
+  0x089: 766f000000   | jg loop
+                      | 
+  0x08e:              | ending:
+  0x08e: b03f         | popl %ebx
+  0x090: b06f         | popl %esi
+  0x092: b07f         | popl %edi
+  0x094: 2054         | rrmovl %ebp, %esp
+  0x096: b05f         | popl %ebp
+  0x098: 90           | ret
+                      | 
+  0x300:              | .pos 0x300
+  0x300:              | Stack:

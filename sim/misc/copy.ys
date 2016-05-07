@@ -1,0 +1,58 @@
+irmovl Stack, %esp
+irmovl Stack, %ebp
+pushl %ebp
+irmovl $3, %edx
+pushl %edx
+irmovl dest, %edx
+pushl %edx
+irmovl src, %edx
+pushl %edx
+call copy_block
+halt
+
+.align 4
+# Source block
+src:
+.long 0x00a
+.long 0x0b0
+.long 0xc00
+# Destination block
+dest:
+.long 0x111
+.long 0x222
+.long 0x333
+
+copy_block:
+pushl %ebp
+rrmovl %esp, %ebp
+pushl %edi
+irmovl $4, %edi
+pushl %esi
+pushl %ebx
+mrmovl 8(%ebp), %ebx
+mrmovl 12(%ebp), %edx
+mrmovl 16(%ebp), %ecx
+xorl %eax, %eax
+andl %ecx, %ecx
+jle ending
+
+loop:
+mrmovl (%ebx), %esi
+addl %edi, %ebx
+rmmovl %esi, (%edx)
+addl %edi, %edx
+xorl %esi, %eax
+irmovl $1, %esi
+subl %esi, %ecx
+jg loop
+
+ending:
+popl %ebx
+popl %esi
+popl %edi
+rrmovl %ebp, %esp
+popl %ebp
+ret
+
+.pos 0x300
+Stack:
