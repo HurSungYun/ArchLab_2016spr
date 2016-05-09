@@ -88,16 +88,16 @@
   0x0bc:              | src:
   0x0bc: 01000000     | 	.long 1
   0x0c0: feffffff     | 	.long -2
-  0x0c4: fdffffff     | 	.long -3
-  0x0c8: 04000000     | 	.long 4
+  0x0c4: 03000000     | 	.long 3
+  0x0c8: fcffffff     | 	.long -4
   0x0cc: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
                       | 
   0x0d0:              | 	.align 16
   0x0d0:              | Predest:
   0x0d0: fadebc00     | 	.long 0xbcdefa
   0x0d4:              | dest:
-  0x0d4: ffaacc00     | 	.long 0xccaaff
-  0x0d8: ccaaff00     | 	.long 0xffaacc
+  0x0d4: ccaaff00     | 	.long 0xffaacc
+  0x0d8: ffaacc00     | 	.long 0xccaaff
   0x0dc: ccaaff00     | 	.long 0xffaacc
   0x0e0: ccaaff00     | 	.long 0xffaacc
   0x0e4: ccaaff00     | 	.long 0xffaacc

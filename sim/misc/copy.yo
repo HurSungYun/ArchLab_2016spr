@@ -1,7 +1,7 @@
   0x000: 30f400030000 | irmovl Stack, %esp
   0x006: 30f500030000 | irmovl Stack, %ebp
   0x00c: a05f         | pushl %ebp
-  0x00e: 30f200000000 | irmovl $0, %edx
+  0x00e: 30f203000000 | irmovl $3, %edx
   0x014: a02f         | pushl %edx
   0x016: 30f238000000 | irmovl dest, %edx
   0x01c: a02f         | pushl %edx
