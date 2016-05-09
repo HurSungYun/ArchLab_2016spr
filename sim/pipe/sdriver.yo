@@ -11,7 +11,7 @@
   0x012: a00f         | 	pushl %eax
   0x014: 30f0d4000000 | 	irmovl dest, %eax	# dst array
   0x01a: a00f         | 	pushl %eax
-  0x01c: 30f0bc000000 | 	irmovl src, %eax	# src array
+  0x01c: 30f0b4000000 | 	irmovl src, %eax	# src array
   0x022: a00f         | 	pushl %eax
   0x024: 802a000000   | 	call ncopy		 
   0x029: 00           | 	halt			# should halt with num nonzeros in %eax
@@ -38,7 +38,7 @@
                       | ##################################################################
                       | # You can modify this portion 
   0x046: 6222         |   andl %edx,%edx    # len <= 0?
-  0x048: 71ae000000   |   jle Done          # if so, goto Done:
+  0x048: 71a6000000   |   jle Done          # if so, goto Done:
   0x04d: 30f0fcffffff |   irmovl $-4,%eax
   0x053: 6001         |   addl %eax,%ecx
   0x055:              | Move:
@@ -48,49 +48,53 @@
   0x063: 30f0ffaacc00 |   irmovl $0xccaaff,%eax # *dst == pseudo-end of file?
   0x069: 6306         |   xorl %eax,%esi
   0x06b: 7455000000   |   jne Move              # not? goto Move
-  0x070: 30f004000000 |   irmovl $4,%eax        # Maintain pseudo-end of file
-  0x076: 6001         |   addl %eax,%ecx
-  0x078: 6300         |   xorl %eax,%eax
-  0x07a:              | Loop: 
-  0x07a: 506300000000 |   mrmovl (%ebx), %esi   # read val from src...
-  0x080: 406100000000 |   rmmovl %esi, (%ecx)   # ...and store it to dst
-  0x086: 6266         |   andl %esi, %esi       # val <= 0?
-  0x088: 7195000000   |   jle Npos              # if so, goto Npos:
-  0x08d: 30f701000000 |   irmovl $1, %edi
-  0x093: 6070         |   addl %edi, %eax       # count++
-  0x095:              | Npos: 
-  0x095: 30f701000000 |   irmovl $1, %edi
-  0x09b: 6172         |   subl %edi, %edx       # len--
-  0x09d: 30f704000000 |   irmovl $4, %edi
-  0x0a3: 6073         |   addl %edi, %ebx       # src++
-  0x0a5: 6071         |   addl %edi, %ecx       # dst++
-  0x0a7: 6222         |   andl %edx,%edx        # len > 0?
-  0x0a9: 767a000000   |   jg Loop               # if so, goto Loop:
+                      | #  irmovl $4,%eax        # Maintain pseudo-end of file
+                      | #  addl %eax,%ecx
+  0x070: c0f104000000 |   iaddl $4, %ecx
+  0x076: 6300         |   xorl %eax,%eax
+  0x078:              | Loop: 
+  0x078: 506300000000 |   mrmovl (%ebx), %esi   # read val from src...
+  0x07e: 406100000000 |   rmmovl %esi, (%ecx)   # ...and store it to dst
+  0x084: 6266         |   andl %esi, %esi       # val <= 0?
+  0x086: 7191000000   |   jle Npos              # if so, goto Npos:
+                      |   #irmovl $1, %edi
+                      |   #addl %edi, %eax       # count++
+  0x08b: c0f001000000 |   iaddl $1, %eax
+  0x091:              | Npos: 
+                      |   #irmovl $1, %edi
+                      |   #subl %edi, %edx       # len--
+  0x091: f0f201000000 |   isubl $1, %edx
+                      |   #irmovl $4, %edi
+                      |   #addl %edi, %ebx       # src++
+  0x097: c0f304000000 |   iaddl $4, %ebx
+  0x09d: 6071         |   addl %edi, %ecx       # dst++
+  0x09f: 6222         |   andl %edx,%edx        # len > 0?
+  0x0a1: 7678000000   |   jg Loop               # if so, goto Loop:
                       | ##################################################################
                       | # Do not modify the following section of code (Function epiloge)
-  0x0ae:              | Done:
-  0x0ae: b07f         |   popl %edi               # Restore callee-save registers
-  0x0b0: b03f         |   popl %ebx
-  0x0b2: b06f         |   popl %esi
-  0x0b4: 2054         |   rrmovl %ebp, %esp
-  0x0b6: b05f         |   popl %ebp
-  0x0b8: 90           |   ret
+  0x0a6:              | Done:
+  0x0a6: b07f         |   popl %edi               # Restore callee-save registers
+  0x0a8: b03f         |   popl %ebx
+  0x0aa: b06f         |   popl %esi
+  0x0ac: 2054         |   rrmovl %ebp, %esp
+  0x0ae: b05f         |   popl %ebp
+  0x0b0: 90           |   ret
                       | ##################################################################
                       | # Keep the following label at the end of your function
-  0x0b9:              | End:
+  0x0b1:              | End:
                       | #/* $end ncopy-ys */
-  0x0b9:              | EndFun:
+  0x0b1:              | EndFun:
                       | 
                       | ###############################
                       | # Source and destination blocks 
                       | ###############################
-  0x0bc:              | 	.align 4
-  0x0bc:              | src:
-  0x0bc: 01000000     | 	.long 1
-  0x0c0: feffffff     | 	.long -2
-  0x0c4: 03000000     | 	.long 3
-  0x0c8: fcffffff     | 	.long -4
-  0x0cc: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
+  0x0b4:              | 	.align 4
+  0x0b4:              | src:
+  0x0b4: ffffffff     | 	.long -1
+  0x0b8: feffffff     | 	.long -2
+  0x0bc: 03000000     | 	.long 3
+  0x0c0: 04000000     | 	.long 4
+  0x0c4: fadebc00     | 	.long 0xbcdefa # This shouldn't get moved
                       | 
   0x0d0:              | 	.align 16
   0x0d0:              | Predest:

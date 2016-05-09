@@ -30,21 +30,25 @@ Move:
   irmovl $0xccaaff,%eax # *dst == pseudo-end of file?
   xorl %eax,%esi
   jne Move              # not? goto Move
-  irmovl $4,%eax        # Maintain pseudo-end of file
-  addl %eax,%ecx
+#  irmovl $4,%eax        # Maintain pseudo-end of file
+#  addl %eax,%ecx
+  iaddl $4, %ecx
   xorl %eax,%eax
 Loop: 
   mrmovl (%ebx), %esi   # read val from src...
   rmmovl %esi, (%ecx)   # ...and store it to dst
   andl %esi, %esi       # val <= 0?
   jle Npos              # if so, goto Npos:
-  irmovl $1, %edi
-  addl %edi, %eax       # count++
+  #irmovl $1, %edi
+  #addl %edi, %eax       # count++
+  iaddl $1, %eax
 Npos: 
-  irmovl $1, %edi
-  subl %edi, %edx       # len--
-  irmovl $4, %edi
-  addl %edi, %ebx       # src++
+  #irmovl $1, %edi
+  #subl %edi, %edx       # len--
+  isubl $1, %edx
+  #irmovl $4, %edi
+  #addl %edi, %ebx       # src++
+  iaddl $4, %ebx
   addl %edi, %ecx       # dst++
   andl %edx,%edx        # len > 0?
   jg Loop               # if so, goto Loop:
