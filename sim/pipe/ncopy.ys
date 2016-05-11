@@ -21,48 +21,46 @@ ncopy:  pushl %ebp    # Save old frame pointer
 # You can modify this portion 
   andl %edx,%edx    # len <= 0?
   jle Done          # if so, goto Done:
-  irmovl $-4,%eax
-  addl %eax,%ecx
+  iaddl $-4,%ecx
+  irmovl $0xccaaff,%eax # *dst == pseudo-end of file?
 Move:
   iaddl $4,%ecx
   mrmovl (%ecx),%esi    # *dst++
-  irmovl $0xccaaff,%eax # *dst == pseudo-end of file?
   xorl %eax,%esi
-  jne Move              # not? goto Move
-  iaddl $4, %ecx
+  jne Move
 
+  iaddl $4, %ecx
   xorl %eax,%eax
   isubl $2, %edx
   jg Loop1
   iaddl $1, %edx
   jg Two
   je One
-  jmp Done
 
 Loop1:
   iaddl $12, %ebx
   iaddl $12, %ecx
   mrmovl -12(%ebx), %esi
-  rmmovl %esi, -12(%ecx)
+  mrmovl -8(%ebx), %edi   
   andl %esi, %esi
   jle Loop2
   iaddl $1, %eax
 Loop2: 
-  mrmovl -8(%ebx), %edi   # read val from src...
-  rmmovl %edi, -8(%ecx)   # ...and store it to dst
-  andl %edi, %edi       # val <= 0?
-  jle Loop3              # if so, goto Npos:
+  rmmovl %esi, -12(%ecx)
+  rmmovl %edi, -8(%ecx)   
+  mrmovl -4(%ebx), %esi 
+  andl %edi, %edi       
+  jle Loop3             
   iaddl $1, %eax
 Loop3:
-  mrmovl -4(%ebx), %esi 
   rmmovl %esi, -4(%ecx)
+  isubl $3, %edx
   andl %esi, %esi
   jle LoopController
   iaddl $1, %eax
 LoopController:
-  isubl $3, %edx
-  andl %edx,%edx        # len > 0?
-  jg Loop1              # if so, goto Loop:
+  andl %edx,%edx        
+  jg Loop1   
   iaddl $1, %edx
   je One
   jl Done
