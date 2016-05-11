@@ -30,19 +30,55 @@ Move:
   xorl %eax,%esi
   jne Move              # not? goto Move
   iaddl $4, %ecx
+
   xorl %eax,%eax
-Loop: 
-  mrmovl (%ebx), %esi   # read val from src...
-  rmmovl %esi, (%ecx)   # ...and store it to dst
-  andl %esi, %esi       # val <= 0?
-  jle Npos              # if so, goto Npos:
+  isubl $2, %edx
+  jg Loop1
+  iaddl $1, %edx
+  jg Two
+  je One
+  jmp Done
+
+Loop1:
+  iaddl $12, %ebx
+  iaddl $12, %ecx
+  mrmovl -12(%ebx), %esi
+  rmmovl %esi, -12(%ecx)
+  andl %esi, %esi
+  jle Loop2
   iaddl $1, %eax
-Npos: 
-  isubl $1, %edx
-  iaddl $4, %ebx
-  iaddl $4, %ecx       # dst++
+Loop2: 
+  mrmovl -8(%ebx), %edi   # read val from src...
+  rmmovl %edi, -8(%ecx)   # ...and store it to dst
+  andl %edi, %edi       # val <= 0?
+  jle Loop3              # if so, goto Npos:
+  iaddl $1, %eax
+Loop3:
+  mrmovl -4(%ebx), %esi 
+  rmmovl %esi, -4(%ecx)
+  andl %esi, %esi
+  jle LoopController
+  iaddl $1, %eax
+LoopController:
+  isubl $3, %edx
   andl %edx,%edx        # len > 0?
-  jg Loop               # if so, goto Loop:
+  jg Loop1              # if so, goto Loop:
+  iaddl $1, %edx
+  je One
+  jl Done
+Two:
+  mrmovl 4(%ebx), %esi
+  rmmovl %esi, 4(%ecx)
+  andl %esi, %esi
+  jle One
+  iaddl $1, %eax
+One:
+  mrmovl (%ebx), %edi
+  rmmovl %edi, (%ecx)
+  andl %edi, %edi
+  jle Done
+  iaddl $1, %eax
+
 ##################################################################
   
 # Do not modify the following section of code (Function epiloge)
