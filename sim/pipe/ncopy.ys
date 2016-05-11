@@ -21,15 +21,31 @@ ncopy:  pushl %ebp    # Save old frame pointer
 # You can modify this portion 
   andl %edx,%edx    # len <= 0?
   jle Done          # if so, goto Done:
-  iaddl $-4,%ecx
+#  iaddl $-4,%ecx
+
   irmovl $0xccaaff,%eax # *dst == pseudo-end of file?
 Move:
-  iaddl $4,%ecx
   mrmovl (%ecx),%esi    # *dst++
+  iaddl $4,%ecx
   xorl %eax,%esi
   jne Move
 
-  iaddl $4, %ecx
+#Move:
+#  iaddl $4,%ecx
+#  mrmovl (%ecx),%esi    # *dst++
+#  irmovl $0xccaaff,%eax # *dst == pseudo-end of file?
+#  xorl %eax,%esi
+#  jne Move2
+#  jmp PreLoop
+#Move2:
+#  iaddl $4, %ecx
+#  mrmovl (%ecx), %edi
+#  irmovl $0xccaaff,%eax # *dst == pseudo-end of file?
+#  xorl %eax, %edi
+#  jne Move
+
+PreLoop:
+#  iaddl $4, %ecx
   xorl %eax,%eax
   isubl $2, %edx
   jg Loop1
@@ -46,15 +62,15 @@ Loop1:
   jle Loop2
   iaddl $1, %eax
 Loop2: 
-  rmmovl %esi, -12(%ecx)
   rmmovl %edi, -8(%ecx)   
+  rmmovl %esi, -12(%ecx)
   mrmovl -4(%ebx), %esi 
   andl %edi, %edi       
   jle Loop3             
   iaddl $1, %eax
 Loop3:
-  rmmovl %esi, -4(%ecx)
   isubl $3, %edx
+  rmmovl %esi, -4(%ecx)
   andl %esi, %esi
   jle LoopController
   iaddl $1, %eax
