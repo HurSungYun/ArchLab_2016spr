@@ -32,10 +32,10 @@ Move:
   xorl %eax,%eax
 Loop: 
   mrmovl (%ebx), %esi   # read val from src...
-  iaddl $1, %eax        #count++
   rmmovl %esi, (%ecx)   # ...and store it to dst
   andl %esi, %esi       # val <= 0?
-  jle Npos              # if so, goto Npos:
+  jle Npos              # if so, goto Npos: 
+  iaddl $1, %eax        #count++
 Npos: 
   isubl $1, %edx        #len--
   iaddl $4, %ebx        # src++
