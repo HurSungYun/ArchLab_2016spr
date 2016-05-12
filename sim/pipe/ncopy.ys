@@ -19,12 +19,12 @@ ncopy:  pushl %ebp    # Save old frame pointer
   mrmovl 12(%ebp),%ecx  # dst
 ##################################################################
 # You can modify this portion 
-  andl %edx,%edx    # len <= 0?
-  jle Done          # if so, goto Done:
+  andl %edx,%edx 
+  jle Done          
+  irmovl $0xccaaff,%eax
 
-  irmovl $0xccaaff,%eax # *dst == pseudo-end of file?
 Move:
-  mrmovl (%ecx),%esi    # *dst++
+  mrmovl (%ecx),%esi
   iaddl $4,%ecx
   xorl %eax,%esi
   jne Move
