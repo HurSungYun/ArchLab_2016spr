@@ -9,6 +9,50 @@
 ## for iaddl (IIADDL) and isubl (IISUBL)).
 ## Your job is to add the rest of the logic to make it work
 
+# HUR SUNGYUN 2014-19768
+
+# I add IIADDL and IISUBL instruction to increase performance
+# A lot of part in implementation is similar with part B
+# Because of data forwarding, it does not need to handle stall or bubble
+# The difference is caring about each stage, but the main idea is same
+# The table below is iaddl and isubl instruction table
+
+# iaddl V, rB
+#
+# fetch icode:ifun <- M1[pc]
+#       rA:rB <- M1[pc+1]
+#       valC <- M4[pc+2]
+#       valP <- pc+6
+#
+# decode valB <- R[rB]
+#
+# execute valE <- valC + valB
+#
+# memory
+#
+# write back R[rB] <- valE
+#
+# pc update  PC <- valP
+
+
+# isubl V, rB
+#
+# fetch icode:ifun <- M1[pc]
+#       rA:rB <- M1[pc+1]
+#       valC <- M4[pc+2]
+#       valP <- pc+6
+#
+# decode valB <- R[rB]
+#
+# execute valE <- valB - valC
+#
+# memory
+#
+# write back R[rB] <- valE
+#
+# pc update  PC <- valP
+
+
 ####################################################################
 #    C Include's.  Don't alter these                               #
 ####################################################################

@@ -21,9 +21,6 @@ ele4:
 .long ele5
 ele5:
 .long 0x000
-.long ele6:
-ele6:
-.long 0x1000
 .long 0
 
 sum_list:

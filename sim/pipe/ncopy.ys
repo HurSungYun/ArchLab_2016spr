@@ -1,4 +1,25 @@
 #/* $begin ncopy-ys */
+
+# HUR SUNGYUN 2014-19768
+
+# I used 5 things for decreasing CPE
+
+# 1. loop unrolling
+# There are too much instructions executed for adding 4 or 1 in original code. Therefore, I decided to unroll the loop and make the percentage of instructions for increasing index values lower. I divided by 3, so I increase index by 12 or 3 each. It makes my program faster by saving cycles that used for increasing index
+
+# 2. taken branch
+# To prevent the waste of mis predicted branch, I set the order of jumps to highly selected order. For example, Jumping more than 3 values first, and then 2 values, and one value lastly. It is more likely to reduce cycle because most of arrays have more than 3 values. This makes my program more faster.
+
+# 3. preventing stall or bubble
+# I reordered some instructions for preventing stall or bubble. For example, I set mrmovl .., %esi apart from rmmovl %esi, ,,,, . This saves one cycle for waiting the mrmovl done first. 
+
+# 4. change into iaddl, isubl
+# it reduce two cycle into one cycle. I stated detail in pipe-full.hcl
+
+# 5. make Move: efficient
+# At first, Move is not that efficient because of "adding first, process later"/ Therefore, I changed it into "process first, adding later". It makes my program a bit faster.
+
+
 ##################################################################
 # ncopy.ys - Concatenates a src block of len ints to dst.
 # Return the number of positive ints (>0) contained in src.
