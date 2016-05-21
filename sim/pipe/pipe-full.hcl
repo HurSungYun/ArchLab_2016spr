@@ -240,14 +240,16 @@ int f_predPC = [
 ## What register should be used as the A source?
 int d_srcA = [
 	D_icode in { IRRMOVL, IRMMOVL, IOPL, IPUSHL  } : D_rA;
-	D_icode in { IPOPL, IRET, ILEAVE } : RESP;
+	D_icode in { IPOPL, IRET } : RESP;
+        D_icode in { ILEAVEL } : REBP;
 	1 : RNONE; # Don't need register
 ];
 
 ## What register should be used as the B source?
 int d_srcB = [
 	D_icode in { IOPL, IRMMOVL, IMRMOVL, IIADDL, IISUBL  } : D_rB;       #add
-	D_icode in { IPUSHL, IPOPL, ICALL, IRET, ILEAVE } : RESP;
+	D_icode in { IPUSHL, IPOPL, ICALL, IRET } : RESP;
+        D_icode in { ILEAVEL } : REBP;
 	1 : RNONE;  # Don't need register
 ];
 

@@ -160,7 +160,7 @@ sub cmdline {
     }
 
     if ($opt_l) {
-	$testsubl = 1;
+	$testisubl = 1;
     }
 
     if ($opt_d) {

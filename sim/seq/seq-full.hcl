@@ -9,6 +9,8 @@
 ## for iaddl (IIADDL) and isubl (IISUBL).
 ## Your job is to add the rest of the logic to make it work
 
+# HUR SUNGYUN 2014-19768
+
 # iaddl V, rB
 #
 # fetch icode:ifun <- M1[pc]
@@ -18,7 +20,7 @@
 #
 # decode valB <- R[rB]
 #
-# execute valE <- valC + valB
+# execute valE <- valB + valC
 #
 # memory
 #
